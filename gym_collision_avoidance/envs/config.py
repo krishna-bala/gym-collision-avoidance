@@ -20,7 +20,7 @@ class Config(object):
 
         if not hasattr(self, "USE_STATIC_MAP"):
             self.USE_STATIC_MAP = False
-        
+
         ### TRAIN / PLAY / EVALUATE
         self.TRAIN_MODE           = True # Enable to see the trained agent in action (for testing)
         self.PLAY_MODE           = False # Enable to see the trained agent in action (for testing)
@@ -40,11 +40,18 @@ class Config(object):
         # self.SOCIAL_NORMS = "right"
         # self.SOCIAL_NORMS = "left"
         self.SOCIAL_NORMS = "none"
+        self.REWARD_LEANING_ANGLE = -1.0
+        self.LEANING_THRESH = 0.03
+        self.MAX_LEANING_ANGLE = 0.3
+        self.REWARD_TOPPLE = -1
+        self.REWARD_TOWARDS_GOAL = 0.1
 
         ### SIMULATION
         self.DT             = 0.2 # seconds between simulation time steps
         self.NEAR_GOAL_THRESHOLD = 0.2
-        self.MAX_TIME_RATIO = 2. # agent has this number times the straight-line-time to reach its goal before "timing out"
+        # self.NEAR_GOAL_THRESHOLD = 5.0
+        self.MAX_TIME_RATIO = 2. # agent has this number times the straight-line-time to reach its goal before
+        # "timing out"
         
         ### TEST CASE SETTINGS
         self.TEST_CASE_FN = "get_testcase_random"

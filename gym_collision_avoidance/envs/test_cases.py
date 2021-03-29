@@ -28,6 +28,7 @@ from gym_collision_avoidance.envs.policies.LearningPolicyGA3C import LearningPol
 
 # Dynamics
 from gym_collision_avoidance.envs.dynamics.UnicycleDynamics import UnicycleDynamics
+from gym_collision_avoidance.envs.dynamics.BallbotDynamics import BallbotDynamics
 from gym_collision_avoidance.envs.dynamics.UnicycleDynamicsMaxTurnRate import UnicycleDynamicsMaxTurnRate
 from gym_collision_avoidance.envs.dynamics.ExternalDynamics import ExternalDynamics
 
@@ -64,6 +65,7 @@ sensor_dict = {
 
 dynamics_dict = {
     'unicycle': UnicycleDynamics,
+    'ballbot': BallbotDynamics,
 }
 
 def get_testcase_crazy(policy="GA3C_CADRL"):
@@ -297,6 +299,14 @@ def cadrl_test_case_to_agents(test_case, policies='GA3C_CADRL', policy_distr=Non
 
     # agent_policy_list = [policy_dict[policy] for policy in agent_policy_list]
     agent_dynamics_list = [agents_dynamics for _ in range(num_agents)]
+
+    # NOTE: Change to ballbot dynamics whenever we select learning_ga3c as the policy. Toggle the if statement to
+    #  remove this feature.
+    if(True):
+        for i, policy in enumerate(agent_policy_list):
+            if policy == 'learning_ga3c':
+                agent_dynamics_list[i] = 'ballbot'
+
     # Look up the string name in each dict
     agent_sensors_list = [[sensor_dict[sensor] for sensor in agents_sensors] for _ in range(num_agents)]
 

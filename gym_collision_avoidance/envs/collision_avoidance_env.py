@@ -329,6 +329,9 @@ class CollisionAvoidanceEnv(gym.Env):
         collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent = \
             self._check_for_collisions()
 
+        agent_lean_penalty = self._check_agent_lean_angle()
+        agent_dist_to_goal = self._check_agent_dist_to_goal()
+
         for i, agent in enumerate(self.agents):
             if agent.is_at_goal:
                 if agent.was_at_goal_already is False:
@@ -361,6 +364,9 @@ class CollisionAvoidanceEnv(gym.Env):
                             rewards[i] += self.reward_wiggly_behavior
                         # elif entered_norm_zone[i]:
                         #     rewards[i] = self.reward_entered_norm_zone
+                        rewards[i] += agent_lean_penalty[i]
+                        rewards[i] += agent_dist_to_goal[i]
+
         rewards = np.clip(rewards, self.min_possible_reward,
                           self.max_possible_reward)
         if Config.TRAIN_SINGLE_AGENT:
@@ -408,6 +414,31 @@ class CollisionAvoidanceEnv(gym.Env):
                     collision_with_wall[i] = True
         return collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent
 
+    def _check_agent_lean_angle(self):
+        agent_lean_penalty = [0 for _ in self.agents]
+        for i, agent in enumerate(self.agents):
+            if agent.policy.is_still_learning:
+                theta = np.linalg.norm(agent.theta_ego_frame)
+                if theta > Config.LEANING_THRESH and theta < Config.MAX_LEANING_ANGLE:
+                    agent_lean_penalty[i] = Config.REWARD_LEANING_ANGLE * (theta / Config.MAX_LEANING_ANGLE)
+                elif theta > Config.MAX_LEANING_ANGLE:
+                    if not agent.fallen_over: # Only penalize the first instance it falls over
+                        agent_lean_penalty[i] = Config.REWARD_TOPPLE
+                        agent.fallen_over = True
+        return agent_lean_penalty
+
+    def _check_agent_dist_to_goal(self):
+        agent_dist_to_goal_penalty = [0 for _ in self.agents]
+        for i, agent in enumerate(self.agents):
+            dist_to_goal = np.linalg.norm(agent.pos_global_frame - agent.goal_global_frame)
+            if theta > Config.LEANING_THRESH and theta < Config.MAX_LEANING_ANGLE:
+                agent_lean_penalty[i] = Config.REWARD_LEANING_ANGLE * (theta / Config.MAX_LEANING_ANGLE)
+            elif theta > Config.MAX_LEANING_ANGLE:
+                if not agent.fallen_over: # Only penalize the first instance it falls over
+                    agent_lean_penalty[i] = Config.REWARD_TOPPLE
+                    agent.fallen_over = True
+        return agent_lean_penalty
+
     def _check_which_agents_done(self):
         """ Check if any agents have reached goal, run out of time, or collided.
 
@@ -421,7 +452,10 @@ class CollisionAvoidanceEnv(gym.Env):
                 [a.ran_out_of_time for a in self.agents])
         in_collision_condition = np.array(
                 [a.in_collision for a in self.agents])
-        which_agents_done = np.logical_or.reduce((at_goal_condition, ran_out_of_time_condition, in_collision_condition))
+        fallen_over_condition = np.array( [a.fallen_over for a in self.agents])
+
+        which_agents_done = np.logical_or.reduce((at_goal_condition, ran_out_of_time_condition,
+                                                  in_collision_condition, fallen_over_condition))
         for agent_index, agent in enumerate(self.agents):
             agent.is_done = which_agents_done[agent_index]
         

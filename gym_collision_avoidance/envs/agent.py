@@ -85,6 +85,8 @@ class Agent(object):
         self.speed_ego_frame = 0.0
         self.heading_ego_frame = 0.0
         self.vel_ego_frame = np.array([0.0, 0.0])
+        self.theta_ego_frame = np.array([0.0, 0.0], dtype='float64')
+        self.theta_dot_ego_frame = np.array([0.0, 0.0], dtype='float64')
 
         self.past_actions = np.zeros((self.num_actions_to_store,
                                       self.action_dim))
@@ -110,6 +112,7 @@ class Agent(object):
         self.was_in_collision_already = False
         self.in_collision = False
         self.ran_out_of_time = False
+        self.fallen_over = False
 
         self.num_states_in_history = int(1.2*self.time_remaining_to_reach_goal / self.dt_nominal)
         self.global_state_history = np.empty((self.num_states_in_history, self.global_state_dim))
@@ -197,7 +200,7 @@ class Agent(object):
         """
 
         # Agent is done if any of these conditions hold (at goal, out of time, in collision). Stop moving if so & ignore the action.
-        if self.is_at_goal or self.ran_out_of_time or self.in_collision:
+        if self.is_at_goal or self.ran_out_of_time or self.in_collision or self.fallen_over:
             if self.is_at_goal:
                 self.was_at_goal_already = True
             if self.in_collision:
