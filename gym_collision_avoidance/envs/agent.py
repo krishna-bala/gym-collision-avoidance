@@ -113,6 +113,7 @@ class Agent(object):
         self.in_collision = False
         self.ran_out_of_time = False
         self.fallen_over = False
+        self.was_fallen_over = False
 
         self.num_states_in_history = int(1.2*self.time_remaining_to_reach_goal / self.dt_nominal)
         self.global_state_history = np.empty((self.num_states_in_history, self.global_state_dim))
@@ -205,6 +206,8 @@ class Agent(object):
                 self.was_at_goal_already = True
             if self.in_collision:
                 self.was_in_collision_already = True
+            if self.fallen_over:
+                self.was_fallen_over = True
             self.vel_global_frame = np.array([0.0, 0.0])
             self._store_past_velocities()
             return

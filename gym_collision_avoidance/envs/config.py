@@ -27,10 +27,10 @@ class Config(object):
         self.EVALUATE_MODE       = False # Enable to see the trained agent in action (for testing)
         
         ### REWARDS
-        self.REWARD_AT_GOAL = 1.0 # reward given when agent reaches goal position
-        self.REWARD_COLLISION_WITH_AGENT = -0.25 # reward given when agent collides with another agent
-        self.REWARD_COLLISION_WITH_WALL = -0.25 # reward given when agent collides with wall
-        self.REWARD_GETTING_CLOSE   = -0.1 # reward when agent gets close to another agent (unused?)
+        self.REWARD_AT_GOAL = 10.0 # reward given when agent reaches goal position
+        self.REWARD_COLLISION_WITH_AGENT = -5 # reward given when agent collides with another agent
+        self.REWARD_COLLISION_WITH_WALL = -5 # reward given when agent collides with wall
+        self.REWARD_GETTING_CLOSE   = -1 # reward when agent gets close to another agent (unused?)
         self.REWARD_ENTERED_NORM_ZONE   = -0.05 # reward when agent enters another agent's social zone
         self.REWARD_TIME_STEP   = 0.0 # default reward given if none of the others apply (encourage speed)
         self.REWARD_WIGGLY_BEHAVIOR = 0.0
@@ -40,17 +40,17 @@ class Config(object):
         # self.SOCIAL_NORMS = "right"
         # self.SOCIAL_NORMS = "left"
         self.SOCIAL_NORMS = "none"
-        self.REWARD_LEANING_ANGLE = -1.0
-        self.LEANING_THRESH = 0.03
-        self.MAX_LEANING_ANGLE = 0.3
-        self.REWARD_TOPPLE = -1
-        self.REWARD_TOWARDS_GOAL = 0.1
+        self.REWARD_LEANING_ANGLE = -0.1
+        self.LEANING_THRESH = 0.00
+        self.MAX_LEANING_ANGLE = 0.4
+        self.REWARD_FALLEN_OVER = -1
+        self.REWARD_TOWARDS_GOAL = 1.0
 
         ### SIMULATION
         self.DT             = 0.2 # seconds between simulation time steps
         self.NEAR_GOAL_THRESHOLD = 0.2
         # self.NEAR_GOAL_THRESHOLD = 5.0
-        self.MAX_TIME_RATIO = 2. # agent has this number times the straight-line-time to reach its goal before
+        self.MAX_TIME_RATIO = 4. # agent has this number times the straight-line-time to reach its goal before
         # "timing out"
         
         ### TEST CASE SETTINGS

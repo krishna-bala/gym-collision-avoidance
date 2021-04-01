@@ -19,6 +19,7 @@ from gym_collision_avoidance.envs.agent import Agent
 from gym_collision_avoidance.envs.Map import Map
 from gym_collision_avoidance.envs import test_cases as tc
 
+
 class CollisionAvoidanceEnv(gym.Env):
     """ Gym Environment for multiagent collision avoidance
 
@@ -73,14 +74,14 @@ class CollisionAvoidanceEnv(gym.Env):
         #     self.high_state = np.zeros((Config.FULL_STATE_LENGTH))
 
         # Upper/Lower bounds on Actions
-        self.max_heading_change = np.pi/3
+        self.max_heading_change = np.pi / 3
         self.min_heading_change = -self.max_heading_change
         self.min_speed = 0.0
         self.max_speed = 1.0
 
         ### The gym.spaces library doesn't support Python2.7 (syntax of Super().__init__())
         self.action_space_type = Config.ACTION_SPACE_TYPE
-        
+
         if self.action_space_type == Config.discrete:
             self.action_space = gym.spaces.Discrete(self.actions.num_actions, dtype=np.float32)
         elif self.action_space_type == Config.continuous:
@@ -89,16 +90,15 @@ class CollisionAvoidanceEnv(gym.Env):
             self.high_action = np.array([self.max_speed,
                                          self.max_heading_change])
             self.action_space = gym.spaces.Box(self.low_action, self.high_action, dtype=np.float32)
-        
 
         # original observation space
         # self.observation_space = gym.spaces.Box(self.low_state, self.high_state, dtype=np.float32)
-        
+
         # not used...
         # self.observation_space = np.array([gym.spaces.Box(self.low_state, self.high_state, dtype=np.float32)
-                                           # for _ in range(self.num_agents)])
+        # for _ in range(self.num_agents)])
         # observation_space = gym.spaces.Box(self.low_state, self.high_state, dtype=np.float32)
-        
+
         # single agent dict obs
         self.observation = {}
         for agent in range(Config.MAX_NUM_AGENTS_IN_ENVIRONMENT):
@@ -107,11 +107,13 @@ class CollisionAvoidanceEnv(gym.Env):
         # The observation returned by the environment is a Dict of Boxes, keyed by agent index.
         self.observation_space = gym.spaces.Dict({})
         for state in Config.STATES_IN_OBS:
-            self.observation_space.spaces[state] = gym.spaces.Box(Config.STATE_INFO_DICT[state]['bounds'][0]*np.ones((Config.STATE_INFO_DICT[state]['size'])),
-                Config.STATE_INFO_DICT[state]['bounds'][1]*np.ones((Config.STATE_INFO_DICT[state]['size'])),
+            self.observation_space.spaces[state] = gym.spaces.Box(
+                Config.STATE_INFO_DICT[state]['bounds'][0] * np.ones((Config.STATE_INFO_DICT[state]['size'])),
+                Config.STATE_INFO_DICT[state]['bounds'][1] * np.ones((Config.STATE_INFO_DICT[state]['size'])),
                 dtype=Config.STATE_INFO_DICT[state]['dtype'])
             for agent in range(Config.MAX_NUM_AGENTS_IN_ENVIRONMENT):
-                self.observation[agent][state] = np.zeros((Config.STATE_INFO_DICT[state]['size']), dtype=Config.STATE_INFO_DICT[state]['dtype'])
+                self.observation[agent][state] = np.zeros((Config.STATE_INFO_DICT[state]['size']),
+                                                          dtype=Config.STATE_INFO_DICT[state]['dtype'])
 
         self.agents = None
         self.default_agents = None
@@ -168,15 +170,15 @@ class CollisionAvoidanceEnv(gym.Env):
 
         if Config.ANIMATE_EPISODES and self.episode_step_number % self.animation_period_steps == 0:
             plot_episode(self.agents, False, self.map, self.test_case_index,
-                circles_along_traj=Config.PLOT_CIRCLES_ALONG_TRAJ,
-                plot_save_dir=self.plot_save_dir,
-                plot_policy_name=self.plot_policy_name,
-                save_for_animation=True,
-                limits=self.plt_limits,
-                fig_size=self.plt_fig_size,
-                perturbed_obs=self.perturbed_obs,
-                show=False,
-                save=True)
+                         circles_along_traj=Config.PLOT_CIRCLES_ALONG_TRAJ,
+                         plot_save_dir=self.plot_save_dir,
+                         plot_policy_name=self.plot_policy_name,
+                         save_for_animation=True,
+                         limits=self.plt_limits,
+                         fig_size=self.plt_fig_size,
+                         perturbed_obs=self.perturbed_obs,
+                         show=False,
+                         save=True)
 
         # Check which agents' games are finished (at goal/collided/out of time)
         which_agents_done, game_over = self._check_which_agents_done()
@@ -188,10 +190,10 @@ class CollisionAvoidanceEnv(gym.Env):
             which_agents_learning_dict[agent.id] = agent.policy.is_still_learning
 
         return next_observations, rewards, game_over, \
-            {
-                'which_agents_done': which_agents_done_dict,
-                'which_agents_learning': which_agents_learning_dict,
-            }
+               {
+                   'which_agents_done': which_agents_done_dict,
+                   'which_agents_learning': which_agents_learning_dict,
+               }
 
     def reset(self):
         """ Resets the environment, re-initializes agents, plots episode (if applicable) and returns an initial observation.
@@ -200,9 +202,14 @@ class CollisionAvoidanceEnv(gym.Env):
             initial observation (np array): each agent's observation given the initial configuration
         """
         if self.episode_step_number is not None and self.episode_step_number > 0 and self.plot_episodes and self.test_case_index >= 0:
-            plot_episode(self.agents, self.evaluate, self.map, self.test_case_index, self.id, circles_along_traj=Config.PLOT_CIRCLES_ALONG_TRAJ, plot_save_dir=self.plot_save_dir, plot_policy_name=self.plot_policy_name, limits=self.plt_limits, fig_size=self.plt_fig_size, show=Config.SHOW_EPISODE_PLOTS, save=Config.SAVE_EPISODE_PLOTS)
+            plot_episode(self.agents, self.evaluate, self.map, self.test_case_index, self.id,
+                         circles_along_traj=Config.PLOT_CIRCLES_ALONG_TRAJ, plot_save_dir=self.plot_save_dir,
+                         plot_policy_name=self.plot_policy_name, limits=self.plt_limits, fig_size=self.plt_fig_size,
+                         show=Config.SHOW_EPISODE_PLOTS, save=Config.SAVE_EPISODE_PLOTS)
             if Config.ANIMATE_EPISODES:
-                animate_episode(num_agents=len(self.agents), plot_save_dir=self.plot_save_dir, plot_policy_name=self.plot_policy_name, test_case_index=self.test_case_index, agents=self.agents)
+                animate_episode(num_agents=len(self.agents), plot_save_dir=self.plot_save_dir,
+                                plot_policy_name=self.plot_policy_name, test_case_index=self.test_case_index,
+                                agents=self.agents)
             self.episode_number += 1
         self.begin_episode = True
         self.episode_step_number = 0
@@ -211,7 +218,8 @@ class CollisionAvoidanceEnv(gym.Env):
             self._init_static_map()
         for state in Config.STATES_IN_OBS:
             for agent in range(Config.MAX_NUM_AGENTS_IN_ENVIRONMENT):
-                self.observation[agent][state] = np.zeros((Config.STATE_INFO_DICT[state]['size']), dtype=Config.STATE_INFO_DICT[state]['dtype'])
+                self.observation[agent][state] = np.zeros((Config.STATE_INFO_DICT[state]['size']),
+                                                          dtype=Config.STATE_INFO_DICT[state]['dtype'])
         return self._get_obs()
 
     def _take_action(self, actions, dt):
@@ -249,7 +257,7 @@ class CollisionAvoidanceEnv(gym.Env):
 
         # After all agents have selected actions, run one dynamics update
         for i, agent in enumerate(self.agents):
-            agent.take_action(all_actions[i,:], dt)
+            agent.take_action(all_actions[i, :], dt)
 
     def _update_top_down_map(self):
         """ After agents have moved, call this to update the map with their new occupancies. """
@@ -311,9 +319,9 @@ class CollisionAvoidanceEnv(gym.Env):
         else:
             static_map_filename = self.static_map_filename
 
-        x_width = 16 # meters
-        y_width = 16 # meters
-        grid_cell_size = 0.1 # meters/grid cell
+        x_width = 16  # meters
+        y_width = 16  # meters
+        grid_cell_size = 0.1  # meters/grid cell
         self.map = Map(x_width, y_width, grid_cell_size, static_map_filename)
 
     def _compute_rewards(self):
@@ -325,26 +333,35 @@ class CollisionAvoidanceEnv(gym.Env):
         """
 
         # if nothing noteworthy happened in that timestep, reward = -0.01
-        rewards = self.reward_time_step*np.ones(len(self.agents))
+        rewards = self.reward_time_step * np.ones(len(self.agents))
         collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent = \
             self._check_for_collisions()
 
-        agent_lean_penalty = self._check_agent_lean_angle()
-        agent_dist_to_goal = self._check_agent_dist_to_goal()
+        agent_lean = self._get_agent_lean()
+        agent_leaning, agent_fallen_over = self._check_agent_lean_angle(agent_lean)
+        agent_dist_to_goal = self._get_agent_dist_to_goal()
 
         for i, agent in enumerate(self.agents):
             if agent.is_at_goal:
                 if agent.was_at_goal_already is False:
                     # agents should only receive the goal reward once
                     rewards[i] = self.reward_at_goal
+                    if agent.policy.is_still_learning:
+                        print("===================")
+                        print("AGENT REACHED GOAL")
+                        print("===================")
                     # print("Agent %i: Arrived at goal!"
-                          # % agent.id)
+                    # % agent.id)
             else:
                 # agents at their goal shouldn't be penalized if someone else
                 # bumps into them
-                if agent.was_in_collision_already is False:
+                if agent.was_in_collision_already is False and not agent.was_fallen_over:
                     if collision_with_agent[i]:
                         rewards[i] = self.reward_collision_with_agent
+                        if agent.policy.is_still_learning:
+                            print("===================")
+                            print("AGENT COLLIDED")
+                            print("===================")
                         agent.in_collision = True
                         # print("Agent %i: Collision with another agent!"
                         #       % agent.id)
@@ -352,11 +369,11 @@ class CollisionAvoidanceEnv(gym.Env):
                         rewards[i] = self.reward_collision_with_wall
                         agent.in_collision = True
                         # print("Agent %i: Collision with wall!"
-                              # % agent.id)
+                        # % agent.id)
                     else:
                         # There was no collision
                         if dist_btwn_nearest_agent[i] <= Config.GETTING_CLOSE_RANGE:
-                            rewards[i] = -0.1 - dist_btwn_nearest_agent[i]/2.
+                            rewards[i] = -0.1 + dist_btwn_nearest_agent[i] / 2.
                             # print("Agent %i: Got close to another agent!"
                             #       % agent.id)
                         if abs(agent.past_actions[0, 1]) > self.wiggly_behavior_threshold:
@@ -364,8 +381,22 @@ class CollisionAvoidanceEnv(gym.Env):
                             rewards[i] += self.reward_wiggly_behavior
                         # elif entered_norm_zone[i]:
                         #     rewards[i] = self.reward_entered_norm_zone
-                        rewards[i] += agent_lean_penalty[i]
-                        rewards[i] += agent_dist_to_goal[i]
+
+                        if agent_leaning[i]:
+                            rewards[i] += self.reward_leaning_angle * (agent_lean[i] /
+                                                                       Config.MAX_LEANING_ANGLE)
+                        if agent_fallen_over[i]:
+                            rewards[i] += self.reward_fallen_over
+                            if agent.policy.is_still_learning:
+                                print("")
+                                print("AGENT FELL OVER")
+                                print("")
+                            agent.fallen_over = True # Only receive this reward (penalty) once
+
+                        # rewards[i] += self.reward_towards_goal - 2 * (1/(1 + np.exp(-(agent_dist_to_goal[i]-5) /
+                        # 2.0)))
+                        # rewards[i] += self.reward_towards_goal - 0.25 * np.sqrt(agent_dist_to_goal[i])
+                        rewards[i] += 0.25 * np.exp(-0.5 * agent_dist_to_goal[i])
 
         rewards = np.clip(rewards, self.min_possible_reward,
                           self.max_possible_reward)
@@ -414,30 +445,31 @@ class CollisionAvoidanceEnv(gym.Env):
                     collision_with_wall[i] = True
         return collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent
 
-    def _check_agent_lean_angle(self):
-        agent_lean_penalty = [0 for _ in self.agents]
+    def _get_agent_lean(self):
+        agent_lean = [0 for _ in self.agents]
         for i, agent in enumerate(self.agents):
             if agent.policy.is_still_learning:
-                theta = np.linalg.norm(agent.theta_ego_frame)
-                if theta > Config.LEANING_THRESH and theta < Config.MAX_LEANING_ANGLE:
-                    agent_lean_penalty[i] = Config.REWARD_LEANING_ANGLE * (theta / Config.MAX_LEANING_ANGLE)
-                elif theta > Config.MAX_LEANING_ANGLE:
-                    if not agent.fallen_over: # Only penalize the first instance it falls over
-                        agent_lean_penalty[i] = Config.REWARD_TOPPLE
-                        agent.fallen_over = True
-        return agent_lean_penalty
+                agent_lean[i] = np.linalg.norm(agent.theta_ego_frame)
+        return agent_lean
 
-    def _check_agent_dist_to_goal(self):
-        agent_dist_to_goal_penalty = [0 for _ in self.agents]
+    def _get_agent_dist_to_goal(self):
+        agent_dist_to_goal = [0 for _ in self.agents]
         for i, agent in enumerate(self.agents):
-            dist_to_goal = np.linalg.norm(agent.pos_global_frame - agent.goal_global_frame)
-            if theta > Config.LEANING_THRESH and theta < Config.MAX_LEANING_ANGLE:
-                agent_lean_penalty[i] = Config.REWARD_LEANING_ANGLE * (theta / Config.MAX_LEANING_ANGLE)
-            elif theta > Config.MAX_LEANING_ANGLE:
-                if not agent.fallen_over: # Only penalize the first instance it falls over
-                    agent_lean_penalty[i] = Config.REWARD_TOPPLE
-                    agent.fallen_over = True
-        return agent_lean_penalty
+            agent_dist_to_goal[i] = np.linalg.norm(agent.pos_global_frame - agent.goal_global_frame)
+
+        return agent_dist_to_goal
+
+    def _check_agent_lean_angle(self, agent_lean):
+        agent_lean_penalty = [False for _ in self.agents]
+        agent_fallen_over_penalty = [False for _ in self.agents]
+        for i, agent in enumerate(self.agents):
+            if agent.policy.is_still_learning:
+                if agent_lean[i] > Config.LEANING_THRESH and agent_lean[i] < Config.MAX_LEANING_ANGLE:
+                    agent_lean_penalty[i] = True
+                elif agent_lean[i] > Config.MAX_LEANING_ANGLE:
+                    if not agent.fallen_over:  # Only penalize the first instance it falls over
+                        agent_fallen_over_penalty[i] = True
+        return agent_lean_penalty, agent_fallen_over_penalty
 
     def _check_which_agents_done(self):
         """ Check if any agents have reached goal, run out of time, or collided.
@@ -447,18 +479,18 @@ class CollisionAvoidanceEnv(gym.Env):
             - game_over (bool): depending on mode, True if all agents done, True if 1st agent done, True if all learning agents done
         """
         at_goal_condition = np.array(
-                [a.is_at_goal for a in self.agents])
+            [a.is_at_goal for a in self.agents])
         ran_out_of_time_condition = np.array(
-                [a.ran_out_of_time for a in self.agents])
+            [a.ran_out_of_time for a in self.agents])
         in_collision_condition = np.array(
-                [a.in_collision for a in self.agents])
-        fallen_over_condition = np.array( [a.fallen_over for a in self.agents])
+            [a.in_collision for a in self.agents])
+        fallen_over_condition = np.array([a.fallen_over for a in self.agents])
 
         which_agents_done = np.logical_or.reduce((at_goal_condition, ran_out_of_time_condition,
                                                   in_collision_condition, fallen_over_condition))
         for agent_index, agent in enumerate(self.agents):
             agent.is_done = which_agents_done[agent_index]
-        
+
         if Config.EVALUATE_MODE:
             # Episode ends when every agent is done
             game_over = np.all(which_agents_done)
@@ -469,7 +501,7 @@ class CollisionAvoidanceEnv(gym.Env):
             # Episode is done when all *learning* agents are done
             learning_agent_inds = [i for i in range(len(self.agents)) if self.agents[i].policy.is_still_learning]
             game_over = np.all(which_agents_done[learning_agent_inds])
-        
+
         return which_agents_done, game_over
 
     def _get_obs(self):
@@ -502,6 +534,9 @@ class CollisionAvoidanceEnv(gym.Env):
         self.reward_getting_close = Config.REWARD_GETTING_CLOSE
         self.reward_entered_norm_zone = Config.REWARD_ENTERED_NORM_ZONE
         self.reward_time_step = Config.REWARD_TIME_STEP
+        self.reward_leaning_angle = Config.REWARD_LEANING_ANGLE
+        self.reward_fallen_over = Config.REWARD_FALLEN_OVER
+        self.reward_towards_goal = Config.REWARD_TOWARDS_GOAL
 
         self.reward_wiggly_behavior = Config.REWARD_WIGGLY_BEHAVIOR
         self.wiggly_behavior_threshold = Config.WIGGLY_BEHAVIOR_THRESHOLD
@@ -511,7 +546,10 @@ class CollisionAvoidanceEnv(gym.Env):
                       self.reward_collision_with_agent,
                       self.reward_time_step,
                       self.reward_collision_with_wall,
-                      self.reward_wiggly_behavior
+                      self.reward_wiggly_behavior,
+                      self.reward_towards_goal,
+                      self.reward_leaning_angle,
+                      self.reward_fallen_over
                       ])
         self.min_possible_reward = np.min(self.possible_reward_values)
         self.max_possible_reward = np.max(self.possible_reward_values)
@@ -541,7 +579,7 @@ class CollisionAvoidanceEnv(gym.Env):
         # Provide a fn (which returns list of agents) and the fn's args,
         # to be called on each env.reset()
         test_case_fn = getattr(tc, test_case_fn_str, None)
-        assert(callable(test_case_fn))
+        assert (callable(test_case_fn))
 
         # Before running test_case_fn, make sure we didn't provide any args it doesn't accept
         test_case_fn_args = inspect.signature(test_case_fn).parameters
@@ -553,6 +591,7 @@ class CollisionAvoidanceEnv(gym.Env):
                 del test_case_args[key]
         self.test_case_fn = test_case_fn
         self.test_case_args = test_case_args
+
 
 if __name__ == '__main__':
     print("See example.py for a minimum working example.")
