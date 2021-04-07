@@ -337,19 +337,15 @@ class CollisionAvoidanceEnv(gym.Env):
         collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent = \
             self._check_for_collisions()
 
-        agent_lean = self._get_agent_lean()
+        agent_lean = self._get_agents_lean()
         agent_leaning, agent_fallen_over = self._check_agent_lean_angle(agent_lean)
-        agent_dist_to_goal = self._get_agent_dist_to_goal()
+        agent_dist_to_goal = self._get_agents_dist_to_goal()
 
         for i, agent in enumerate(self.agents):
             if agent.is_at_goal:
                 if agent.was_at_goal_already is False:
                     # agents should only receive the goal reward once
                     rewards[i] = self.reward_at_goal
-                    if agent.policy.is_still_learning:
-                        print("===================")
-                        print("AGENT REACHED GOAL")
-                        print("===================")
                     # print("Agent %i: Arrived at goal!"
                     # % agent.id)
             else:
@@ -358,10 +354,6 @@ class CollisionAvoidanceEnv(gym.Env):
                 if agent.was_in_collision_already is False and not agent.was_fallen_over:
                     if collision_with_agent[i]:
                         rewards[i] = self.reward_collision_with_agent
-                        if agent.policy.is_still_learning:
-                            print("===================")
-                            print("AGENT COLLIDED")
-                            print("===================")
                         agent.in_collision = True
                         # print("Agent %i: Collision with another agent!"
                         #       % agent.id)
@@ -387,16 +379,14 @@ class CollisionAvoidanceEnv(gym.Env):
                                                                        Config.MAX_LEANING_ANGLE)
                         if agent_fallen_over[i]:
                             rewards[i] += self.reward_fallen_over
-                            if agent.policy.is_still_learning:
-                                print("")
-                                print("AGENT FELL OVER")
-                                print("")
-                            agent.fallen_over = True # Only receive this reward (penalty) once
+                            agent.fallen_over = True  # Only receive this reward (penalty) once
 
                         # rewards[i] += self.reward_towards_goal - 2 * (1/(1 + np.exp(-(agent_dist_to_goal[i]-5) /
                         # 2.0)))
                         # rewards[i] += self.reward_towards_goal - 0.25 * np.sqrt(agent_dist_to_goal[i])
-                        rewards[i] += 0.25 * np.exp(-0.5 * agent_dist_to_goal[i])
+                        # rewards[i] += 0.25 * np.exp(-0.5 * agent_dist_to_goal[i])
+                        dist_to_goal_hist_avg = self._get_agent_dist_to_goal_hist(agent)
+                        rewards[i] += 0.1 * (dist_to_goal_hist_avg - agent_dist_to_goal[i])
 
         rewards = np.clip(rewards, self.min_possible_reward,
                           self.max_possible_reward)
@@ -445,19 +435,37 @@ class CollisionAvoidanceEnv(gym.Env):
                     collision_with_wall[i] = True
         return collision_with_agent, collision_with_wall, entered_norm_zone, dist_btwn_nearest_agent
 
-    def _get_agent_lean(self):
+    def _get_agents_lean(self):
         agent_lean = [0 for _ in self.agents]
         for i, agent in enumerate(self.agents):
             if agent.policy.is_still_learning:
                 agent_lean[i] = np.linalg.norm(agent.theta_ego_frame)
         return agent_lean
 
-    def _get_agent_dist_to_goal(self):
+    def _get_agents_dist_to_goal(self):
         agent_dist_to_goal = [0 for _ in self.agents]
         for i, agent in enumerate(self.agents):
             agent_dist_to_goal[i] = np.linalg.norm(agent.pos_global_frame - agent.goal_global_frame)
 
         return agent_dist_to_goal
+
+    def _get_agent_dist_to_goal_hist(self, agent):
+        if agent.step_num < 5:
+            dist_to_goal_hist = np.linalg.norm((agent.global_state_history[:agent.step_num,
+                                                1] - agent.goal_global_frame[0],
+                                                agent.global_state_history[:agent.step_num,
+                                                2] - agent.goal_global_frame[1]), axis=0)
+            dist_to_goal_hist_avg = np.average(dist_to_goal_hist)
+        else:
+            dist_to_goal_hist = np.linalg.norm((agent.global_state_history[
+                                                agent.step_num - 5:agent.step_num,
+                                                1] - agent.goal_global_frame[0],
+                                                agent.global_state_history[
+                                                agent.step_num - 5:agent.step_num,
+                                                2] - agent.goal_global_frame[1]), axis=0)
+            dist_to_goal_hist_avg = np.average(dist_to_goal_hist)
+
+        return dist_to_goal_hist_avg
 
     def _check_agent_lean_angle(self, agent_lean):
         agent_lean_penalty = [False for _ in self.agents]
