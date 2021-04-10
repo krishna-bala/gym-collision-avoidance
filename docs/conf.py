@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'gym-collision-avoidance'
-copyright = u'2020, Michael Everett'
+copyright = u'2021, Michael Everett'
 author = u'Michael Everett'
 
 # The version info for the project you're documenting, acts as replacement for

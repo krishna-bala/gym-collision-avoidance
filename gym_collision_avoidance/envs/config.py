@@ -92,6 +92,9 @@ class Config(object):
         self.RVO_COLLAB_COEFF = 0.5
         self.RVO_ANTI_COLLAB_T = 1.0
 
+        ### STORAGE
+        self.STORE_HISTORY = True
+
         ### OBSERVATION VECTOR
         self.TRAIN_SINGLE_AGENT = False
         self.STATE_INFO_DICT = {
@@ -236,6 +239,24 @@ class SmallTestSuite(EvaluateConfig):
         self.ANIMATE_EPISODES = False
         self.PLOT_CIRCLES_ALONG_TRAJ = True
         self.NUM_TEST_CASES = 4
+
+class LargeNumAgents(EvaluateConfig):
+    def __init__(self):
+        self.MAX_NUM_OTHER_AGENTS_OBSERVED = 39
+        EvaluateConfig.__init__(self)
+        self.SAVE_EPISODE_PLOTS = True
+        self.SHOW_EPISODE_PLOTS = False
+        self.ANIMATE_EPISODES = False
+        self.PLOT_CIRCLES_ALONG_TRAJ = False
+        self.PLT_LIMITS = [[-20, 20], [-15, 15]]
+        self.NUM_TEST_CASES = 10
+        self.NUM_AGENTS_TO_TEST = [40]
+        self.RECORD_PICKLE_FILES = False
+        self.POLICIES_TO_TEST = [
+            'GA3C-CADRL-10'
+            ]
+        self.FIXED_RADIUS_AND_VPREF = False
+        self.NEAR_GOAL_THRESHOLD = 0.2
 
 class FullTestSuite(EvaluateConfig):
     def __init__(self):
