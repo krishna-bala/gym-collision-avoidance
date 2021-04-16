@@ -36,7 +36,7 @@ class Config(object):
         self.REWARD_WIGGLY_BEHAVIOR = 0.0
         self.WIGGLY_BEHAVIOR_THRESHOLD = np.inf
         self.COLLISION_DIST = 0.0 # meters between agents' boundaries for collision
-        self.GETTING_CLOSE_RANGE = 0.2 # meters between agents' boundaries for collision
+        self.GETTING_CLOSE_RANGE = 0.4 # meters between agents' boundaries for collision
         # self.SOCIAL_NORMS = "right"
         # self.SOCIAL_NORMS = "left"
         self.SOCIAL_NORMS = "none"
