@@ -274,6 +274,10 @@ class Agent(object):
         print('Body Frame:')
         print('(vx,vy):', self.vel_ego_frame)
         print('heading:', self.heading_ego_frame)
+        print('theta_x:', self.heading_ego_frame)
+        print('theta_y:', self.heading_ego_frame)
+        print('theta_dot_x:', self.heading_ego_frame)
+        print('theta_dot_y:', self.heading_ego_frame)
         print('----------')
 
     def to_vector(self):

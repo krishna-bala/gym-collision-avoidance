@@ -122,6 +122,38 @@ class Config(object):
                 'std': np.array([3.14], dtype=np.float32),
                 'mean': np.array([0.], dtype=np.float32)
                 },
+            'theta_x_ego_frame': {
+                'dtype': np.float32,
+                'size': 1,
+                'bounds': [-np.inf, np.pi],
+                'attr': 'get_agent_data("theta_x_ego_frame")',
+                'std': np.array([3.14], dtype=np.float32),
+                'mean': np.array([0.], dtype=np.float32)
+            },
+            'theta_y_ego_frame': {
+                'dtype': np.float32,
+                'size': 1,
+                'bounds': [-np.pi, np.pi],
+                'attr': 'get_agent_data("theta_y_ego_frame")',
+                'std': np.array([3.14], dtype=np.float32),
+                'mean': np.array([0.], dtype=np.float32)
+            },
+            'theta_x_dot_ego_frame': {
+                'dtype': np.float32,
+                'size': 1,
+                'bounds': [-np.inf, np.inf],
+                'attr': 'get_agent_data("theta_x_dot_ego_frame")',
+                'std': np.array([1.], dtype=np.float32),
+                'mean': np.array([0.], dtype=np.float32)
+            },
+            'theta_y_dot_ego_frame': {
+                'dtype': np.float32,
+                'size': 1,
+                'bounds': [-np.inf, np.inf],
+                'attr': 'get_agent_data("theta_y_dot_ego_frame")',
+                'std': np.array([1.], dtype=np.float32),
+                'mean': np.array([0.], dtype=np.float32)
+            },
             'pref_speed': {
                 'dtype': np.float32,
                 'size': 1,
