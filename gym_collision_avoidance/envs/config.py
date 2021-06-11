@@ -36,7 +36,7 @@ class Config(object):
         self.REWARD_WIGGLY_BEHAVIOR = 0.0
         self.WIGGLY_BEHAVIOR_THRESHOLD = np.inf
         self.COLLISION_DIST = 0.0 # meters between agents' boundaries for collision
-        self.GETTING_CLOSE_RANGE = 0.6 # meters between agents' boundaries for collision
+        self.GETTING_CLOSE_RANGE = 0.4 # meters between agents' boundaries for collision
         # self.SOCIAL_NORMS = "right"
         # self.SOCIAL_NORMS = "left"
         self.SOCIAL_NORMS = "none"
@@ -215,7 +215,9 @@ class Config(object):
 
     def setup_obs(self):
         if not hasattr(self, "STATES_IN_OBS"):
-            self.STATES_IN_OBS = ['is_learning', 'num_other_agents', 'dist_to_goal', 'heading_ego_frame', 'pref_speed', 'radius', 'other_agents_states']
+            self.STATES_IN_OBS = ['is_learning', 'num_other_agents', 'dist_to_goal', 'heading_ego_frame',
+                                  'theta_x_ego_frame', 'theta_y_ego_frame', 'theta_x_dot_ego_frame',
+                                  'theta_y_dot_ego_frame', 'pref_speed', 'radius', 'other_agents_states']
             # STATES_IN_OBS = ['dist_to_goal', 'radius', 'heading_ego_frame', 'pref_speed', 'other_agent_states', 'use_ppo', 'laserscan']
             # STATES_IN_OBS = ['dist_to_goal', 'radius', 'heading_ego_frame', 'pref_speed', 'other_agent_states', 'use_ppo'] # 2-agent net
             # STATES_IN_OBS = ['dist_to_goal', 'radius', 'heading_ego_frame', 'pref_speed', 'other_agents_states', 'use_ppo', 'num_other_agents', 'laserscan'] # LSTM
