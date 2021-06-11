@@ -125,7 +125,7 @@ class Config(object):
             'theta_x_ego_frame': {
                 'dtype': np.float32,
                 'size': 1,
-                'bounds': [-np.inf, np.pi],
+                'bounds': [-1., 1.],
                 'attr': 'get_agent_data("theta_x_ego_frame")',
                 'std': np.array([3.14], dtype=np.float32),
                 'mean': np.array([0.], dtype=np.float32)
@@ -133,7 +133,7 @@ class Config(object):
             'theta_y_ego_frame': {
                 'dtype': np.float32,
                 'size': 1,
-                'bounds': [-np.pi, np.pi],
+                'bounds': [-1, 1],
                 'attr': 'get_agent_data("theta_y_ego_frame")',
                 'std': np.array([3.14], dtype=np.float32),
                 'mean': np.array([0.], dtype=np.float32)
